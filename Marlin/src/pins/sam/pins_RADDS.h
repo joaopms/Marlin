@@ -25,18 +25,16 @@
  * RADDS
  */
 
-#if NOT_TARGET(__SAM3X8E__)
-  #error "Oops! Select 'Arduino Due' in 'Tools > Board.'"
-#endif
+#include "env_validate.h"
 
 #define BOARD_INFO_NAME "RADDS"
 
 //
 // EEPROM
 //
-#if EITHER(NO_EEPROM_SELECTED, I2C_EEPROM)
+#if ANY(NO_EEPROM_SELECTED, I2C_EEPROM)
   #define I2C_EEPROM
-  #define MARLIN_EEPROM_SIZE              0x2000  // 8KB
+  #define MARLIN_EEPROM_SIZE              0x2000  // 8K
 #endif
 
 //
@@ -113,7 +111,7 @@
 
 /**
  * RADDS Extension Board V2 / V3
- * http://doku.radds.org/dokumentation/extension-board
+ * https://web.archive.org/web/20210627142010/doku.radds.org/dokumentation/extension-board/
  */
 //#define RADDS_EXTENSION                      2
 #if RADDS_EXTENSION >= 2
@@ -181,11 +179,11 @@
 #define TEMP_4_PIN                             5  // dummy so will compile when PINS_DEBUGGING is enabled
 #define TEMP_BED_PIN                           4  // Analog Input
 
-// SPI for Max6675 or Max31855 Thermocouple
-#if DISABLED(SDSUPPORT)
-  #define MAX6675_SS_PIN                      53
+// SPI for MAX Thermocouple
+#if !HAS_MEDIA
+  #define TEMP_0_CS_PIN                       53
 #else
-  #define MAX6675_SS_PIN                      49
+  #define TEMP_0_CS_PIN                       49
 #endif
 
 //
@@ -198,8 +196,8 @@
   #define HEATER_BED_PIN                       7  // BED
 #endif
 
-#ifndef FAN_PIN
-  #define FAN_PIN                              9
+#ifndef FAN0_PIN
+  #define FAN0_PIN                             9
 #endif
 #define FAN1_PIN                               8
 
@@ -226,12 +224,13 @@
 //
 // LCD / Controller
 //
+
 #if HAS_WIRED_LCD
 
   #if ENABLED(RADDS_DISPLAY)
 
     #define LCD_PINS_RS                       42
-    #define LCD_PINS_ENABLE                   43
+    #define LCD_PINS_EN                       43
     #define LCD_PINS_D4                       44
     #define LCD_PINS_D5                       45
     #define LCD_PINS_D6                       46
@@ -248,13 +247,13 @@
     #define SDSS                              10
     #define SD_DETECT_PIN                     14
 
-  #elif ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
+  #elif IS_RRD_FG_SC
 
     // The REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER requires
     // an adapter such as https://www.thingiverse.com/thing:1740725
 
     #define LCD_PINS_RS                       42
-    #define LCD_PINS_ENABLE                   43
+    #define LCD_PINS_EN                       43
     #define LCD_PINS_D4                       44
 
     #define BEEPER_PIN                        41
@@ -278,7 +277,7 @@
   #elif ENABLED(SPARK_FULL_GRAPHICS)
 
     #define LCD_PINS_D4                       29
-    #define LCD_PINS_ENABLE                   27
+    #define LCD_PINS_EN                       27
     #define LCD_PINS_RS                       25
 
     #define BTN_EN1                           35
@@ -286,6 +285,10 @@
     #define BTN_ENC                           37
 
   #endif // SPARK_FULL_GRAPHICS
+
+  #if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
+    #define BTN_ENC_EN                        47  // Detect the presence of the encoder
+  #endif
 
 #endif // HAS_WIRED_LCD
 

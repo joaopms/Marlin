@@ -4,7 +4,6 @@
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
- * Copyright (c) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +37,7 @@ extern GPIO_TypeDef * FastIOPortMap[];
 // ------------------------
 
 void FastIO_init(); // Must be called before using fast io macros
+#define FASTIO_INIT() FastIO_init()
 
 // ------------------------
 // Defines
@@ -59,7 +59,7 @@ void FastIO_init(); // Must be called before using fast io macros
 #endif
 
 #define _READ(IO)               bool(READ_BIT(FastIOPortMap[STM_PORT(digitalPinToPinName(IO))]->IDR, _BV32(STM_PIN(digitalPinToPinName(IO)))))
-#define _TOGGLE(IO)             (FastIOPortMap[STM_PORT(digitalPinToPinName(IO))]->ODR ^= _BV32(STM_PIN(digitalPinToPinName(IO))))
+#define _TOGGLE(IO)             TBI32(FastIOPortMap[STM_PORT(digitalPinToPinName(IO))]->ODR, STM_PIN(digitalPinToPinName(IO)))
 
 #define _GET_MODE(IO)
 #define _SET_MODE(IO,M)         pinMode(IO, M)
